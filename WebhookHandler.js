@@ -1,3 +1,4 @@
+const { time } = require('@discordjs/builders')
 const { MessageEmbed } = require('discord.js')
 
 const botChannelId = "973236937404080129"
@@ -51,22 +52,23 @@ Functions involved in sending messages
 //eslint-disable-next-line
 async function createNewEmbed({ type: id, streamId, payload, type }) {
 	const { toUri, fromUri } = payload
+    await timeMapper(streamId, type)
 	try {
 		let supportTarget = OnSIPMap.get(toUri) || toUri
 		let customerTarget = OnSIPMap.get(fromUri) || fromUri
-		await timeMapper(streamId, type)
 		const newEmbed = new MessageEmbed()
 			.setColor(callStatusMap.get(statusCache.get(streamId)).color)
 			.setTitle(`Call From: ${customerTarget}`)
 			.setDescription(`Id: ${streamId}`)
 			.addFields(
 				{
-					name: "Call Directed At", value: supportTarget, inline: true,
+					name: "Call Directed At", value: `${supportTarget}`,
 				},
 				{
-					name: "Timestamps", value: timeCache.get(streamId),
+					name: "Timestamps", value: `${timeCache.get(streamId)}`,
 				},
 			)
+        console.log(newEmbed)
 		return newEmbed
 	} catch (err) {
 		console.error(err)
@@ -75,20 +77,20 @@ async function createNewEmbed({ type: id, streamId, payload, type }) {
 //eslint-disable-next-line
 async function createEditedEmbed({ type: id, streamId, payload, type }) {
 	const { toUri, fromUri } = payload
+    await timeMapper(streamId, type, timeCache.get(streamId))
 	try {
 		let supportTarget = OnSIPMap.get(toUri) || toUri
 		let customerTarget = OnSIPMap.get(fromUri) || fromUri
-		await timeMapper(streamId, type, timeCache.get(streamId))
 		const newEmbed = new MessageEmbed()
 			.setColor(callStatusMap.get(statusCache.get(streamId)).color)
 			.setTitle(`Call From: ${customerTarget}`)
 			.setDescription(`Id: ${streamId}`)
 			.addFields(
 				{
-					name: "Call Directed At", value: supportTarget, inline: true,
+					name: "Call Directed At", value: `${supportTarget}`, inline: true,
 				},
 				{
-					name: "Timestamps", value: timeCache.get(streamId),
+					name: "Timestamps", value: `${timeCache.get(streamId)}`,
 				},
 			)
         console.log(newEmbed)
@@ -108,18 +110,16 @@ async function messageSend(body, client) {
 		return
 	} // if the channel is not in the cache return and do nothing
 	var embed
-	if (messageCache.has(streamId)) {
+	if (await messageCache.has(streamId)) {
 		embed = await createEditedEmbed(body)
-        console.log(embed)
 		serverChannel.messages.fetch(messageCache.get(streamId)).then(message => {
-			message.edit({embed})
+			message.edit({embeds: [embed]})
 		}).catch(err => {
 			console.error(err)
 		})
 	} else {
 		embed = await createNewEmbed(body)
-        console.log(embed)
-		return channel.send({embed: embed}).then(sent => {
+		return channel.send({embeds: [embed]}).then(sent => {
 			let id = sent.id
 			messageCache.set(streamId, id)
 		}).catch(err => {
@@ -174,6 +174,4 @@ function cacheDeleteCondition(streamId, callStatus) {
 	}
 }
 
-module.exports = {
-	messageSend,
-}
+module.exports = messageSend

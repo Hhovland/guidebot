@@ -39,11 +39,10 @@ async function handleRequest(filterStartsWith) {
 
 //handleRequest('Inbox').then(res => console.log(JSON.stringify(res, null, 2)))
 
-module.exports = {
-	name: 'filters',
-	description: `Show Fogbugz case filters`,
-	execute(message, args) {
-		let filterStartsWith = args[0] || ''
+
+
+exports.run = async(client, message, args, level) => { // eslint-disable-line no-unused-vars
+	let filterStartsWith = args[0] || ''
 		filterStartsWith = filterStartsWith.trim()
 
 		if (!filterStartsWith) {
@@ -57,5 +56,18 @@ module.exports = {
 
 			message.channel.send({ embed: buildFiltersEmbed(filters) })
 		})
-	},
+}
+
+exports.conf = {
+	enabled: true,
+	guildOnly: true,
+	aliases: [ "filters" ],
+	permLevel: "Bot Admin",
+}
+
+exports.help = {
+	name: 'case-filters',
+	category: "System",
+	description: `Show Fogbugz case filters`,
+	usage: " [filter] ",
 }

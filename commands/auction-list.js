@@ -53,17 +53,26 @@ async function makeEmbed(auctionList) {
 	}
 }
 
-module.exports = {
-	name: 'auctionlist',
-	aliases: [ 'al' ],
+exports.run = async(client, message, args, level) => { // eslint-disable-line no-unused-vars
+	getAuctionList().then(async auctionList => {
+		const embed = await makeEmbed(auctionList)
+		message.channel.send({ embed })
+	}).catch(err => {
+		console.log(err)
+		message.author.send(`Error getting auction list`)
+	})
+}
+
+exports.conf = {
+	enabled: true,
+	guildOnly: true,
+	aliases: [ "al" ],
+	permLevel: "Bot Admin",
+}
+
+exports.help = {
+	name: "auctionlist",
+	category: "System",
 	description: 'Shows recent and upcomming auctions',
-	execute(message, args) {
-		getAuctionList().then(async auctionList => {
-			const embed = await makeEmbed(auctionList)
-			message.channel.send({ embed })
-		}).catch(err => {
-			console.log(err)
-			message.author.send(`Error getting auction list`)
-		})
-	},
+	usage: " [tellTheChannel] ",
 }

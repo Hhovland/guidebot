@@ -48,19 +48,28 @@ async function getCalendarEmbed(icalUrl, specificYear) {
 }
 */
 
-module.exports = {
-	name: "holiday",
+exports.run = async(client, message, args, level) => { // eslint-disable-line no-unused-vars
+	/*
+	getCalendarEmbed(icalHolidayCalendarUrl, args[0]).then(embed => {
+		message.channel.send({ embed })
+	}).catch(err => {
+		console.log(err)
+		message.channel.send('Error getting holiday list')
+	})
+	*/
+	message.channel.send('https://app.gusto.com/time_off/show_holidays')
+}
+
+exports.conf = {
+	enabled: true,
+	guildOnly: true,
 	aliases: [ 'holidays', 'holidaylist' ],
+	permLevel: "Bot Admin",
+}
+
+exports.help = {
+	name: "holiday",
+	category: "System",
 	description: "List of ISoft paid holidays",
-	execute(message, args) {
-		/*
-		getCalendarEmbed(icalHolidayCalendarUrl, args[0]).then(embed => {
-			message.channel.send({ embed })
-		}).catch(err => {
-			console.log(err)
-			message.channel.send('Error getting holiday list')
-		})
-		*/
-		message.channel.send('https://app.gusto.com/time_off/show_holidays')
-	},
+	usage: " [postList] ",
 }

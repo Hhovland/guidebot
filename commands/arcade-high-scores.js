@@ -35,18 +35,26 @@ function getArcadeHighScores(cb) {
 	})
 }
 
-module.exports = {
-	name: 'arcade-high-scores',
-	aliases: [ 'arcade', 'scores' ],
-	description: 'Shows the arcade high scores',
-	usage: ' [tellTheChannel]',
-	execute(message, args) {
-		getArcadeHighScores((err, scores) => {
-			if (err) {
-				message.author.send(`Error getting arcade high scores!`)
-			}
+exports.run = async(client, message, args, level) => { // eslint-disable-line no-unused-vars
+	getArcadeHighScores((err, scores) => {
+		if (err) {
+			message.author.send(`Error getting arcade high scores!`)
+		}
 
-			!args.length ? message.author.send(scores, { split: true }) : message.channel.send(scores, { split: true })
-		})
-	},
+		!args.length ? message.author.send(scores, { split: true }) : message.channel.send(scores, { split: true })
+	})
+}
+
+exports.conf = {
+	enabled: true,
+	guildOnly: true,
+	aliases: [ "arcade", "scores" ],
+	permLevel: "Bot Admin",
+}
+
+exports.help = {
+	name: "arcade-high-scores",
+	category: "System",
+	description: "Show the arcade high scores",
+	usage: " [tellTheChannel] ",
 }

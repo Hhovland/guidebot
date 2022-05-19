@@ -21,10 +21,20 @@ const jokes = [
 	'Hilarious and amazingly true thing: if a pizza has a radius (z) and a depth (a) that pizzas volume can be defined Pi*z*z*a.',
 ]
 
-module.exports = {
-	name: 'joke',
+exports.run = async(client, message, args, level) => { // eslint-disable-line no-unused-vars
+	message.channel.send(jokes[Math.floor(Math.random() * (jokes.length))])
+}
+
+exports.conf = {
+	enabled: true,
+	guildOnly: true,
+	aliases: [ "jokes" ],
+	permLevel: "Bot Admin",
+}
+
+exports.help = {
+	name: "joke",
+	category: "System",
 	description: `Aren't you glad I didn't say banana?`,
-	execute(message) {
-		message.channel.send(jokes[Math.floor(Math.random() * (jokes.length))])
-	},
+	usage: " [postJoke] ",
 }

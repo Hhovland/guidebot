@@ -20,13 +20,8 @@ async function enableInterval(minutes, channel, customMessage = '') {
 	await postAuctionTotals(channel)
 }
 
-module.exports = {
-	name: 'auctionint',
-	aliases: [ 'auction_int', 'auction_interval', 'auctioninterval' ],
-	description: 'Auto Post Auction Summary',
-	usage: ' [Interval in Minutes] (defaults to 30)',
-	execute(message, args) {
-		let minutes = parseInt(args[0], 10)
+exports.run = async(client, message, args, level) => { // eslint-disable-line no-unused-vars
+	let minutes = parseInt(args[0], 10)
 		const userDidGiveMinutes = !!(args[0])
 
 		if (isNaN(minutes) || minutes < 1 || minutes > 120) {
@@ -51,5 +46,18 @@ module.exports = {
 			enableInterval(minutes, message.channel)
 				.catch(err => console.log('Error enabling auction posting interval', err))
 		}
-	},
+}
+
+exports.conf = {
+	enabled: true,
+	guildOnly: true,
+	aliases: [ 'auction_int', 'auction_interval', 'auctioninterval' ],
+	permLevel: "Bot Admin",
+}
+
+exports.help = {
+	name: "auction-interval",
+	category: "System",
+	description: "Auto Post Auction Summary",
+	usage: " [tellTheChannel] ",
 }

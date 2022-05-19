@@ -15,10 +15,21 @@ const exampleEmbed = {
 	],
 }
 
-module.exports = {
+
+exports.run = async(client, message, args, level) => { // eslint-disable-line no-unused-vars
+	message.channel.send({ embed: exampleEmbed })
+}
+
+exports.conf = {
+	enabled: true,
+	guildOnly: true,
+	aliases: [ "wikido" ],
+	permLevel: "Bot Admin",
+}
+
+exports.help = {
 	name: 'wiki',
+	category: "System",
 	description: 'Useful Wiki Pages',
-	execute(message) {
-		message.channel.send({ embed: exampleEmbed })
-	},
+	usage: " PostWikiPages ",
 }

@@ -145,12 +145,8 @@ function escapeCodeBlock(codeBlock) {
 	return `\`\`\`${ codeBlock }\`\`\``
 }
 
-module.exports = {
-	name: 'auction-part-types',
-	aliases: [ 'auction-inventory-types', 'apt' ],
-	description: 'See appraisal and sale information for given part types',
-	async execute(message, args = []) {
-		const partTypeList = args.length > 0 ? args : [ 3000, 4000, 4400, 4401, 4402, 5002, 4403, 1170 ]
+exports.run = async(client, message, args, level) => { // eslint-disable-line no-unused-vars
+	const partTypeList = args.length > 0 ? args : [ 3000, 4000, 4400, 4401, 4402, 5002, 4403, 1170 ]
 
 		const connection = mysql.createConnection({ ...dbConfig.berryhill, database: 'itrackax' })
 
@@ -186,5 +182,18 @@ module.exports = {
 		} else {
 			message.channel.send(escapeCodeBlock(codeBlock))
 		}
-	},
+}
+
+exports.conf = {
+	enabled: true,
+	guildOnly: true,
+	aliases: [ 'auction-inventory-types', 'apt' ],
+	permLevel: "Bot Admin",
+}
+
+exports.help = {
+	name: 'auction-part-types',
+	category: "System",
+	description: 'See appraisal and sale information for given part types',
+	usage: " [tellTheChannel] ",
 }

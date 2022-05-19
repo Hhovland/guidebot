@@ -96,11 +96,8 @@ async function getFogBugzCaseInfo({ caseNumber }) {
 
 //getFogBugzCaseInfo({ caseNumber: 39612, detailed: true }).then(res => console.log(JSON.stringify(res, null, 2)))
 
-module.exports = {
-	name: 'case',
-	description: `Show Fogbugz case information`,
-	execute(message, args) {
-		const caseNumber = parseInt(args[0].trim(), 10)
+exports.run = async(client, message, args, level) => { // eslint-disable-line no-unused-vars
+	const caseNumber = parseInt(args[0].trim(), 10)
 
 		getFogBugzCaseInfo({ caseNumber }).then(embed => {
 			message.channel.send({ embed })
@@ -108,5 +105,18 @@ module.exports = {
 			message.channel.send(`Error getting Fogbugz case info`)
 			console.error(error.message)
 		})
-	},
+}
+
+exports.conf = {
+	enabled: true,
+	guildOnly: true,
+	aliases: [ "case" ],
+	permLevel: "Bot Admin",
+}
+
+exports.help = {
+	name: 'case',
+	category: "System",
+	description: `Show Fogbugz case information`,
+	usage: " [case] ",
 }

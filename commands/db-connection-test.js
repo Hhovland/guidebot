@@ -28,12 +28,8 @@ async function getDatabaseAvailability() {
 	}).join('\n')
 }
 
-module.exports = {
-	name: 'db-connection-test',
-	aliases: [ 'db', 'database', 'up', 'db-status', 'connection' ],
-	description: 'Shows the status of ISoft database servers',
-	execute(message) {
-		getDatabaseAvailability()
+exports.run = async(client, message, args, level) => { // eslint-disable-line no-unused-vars
+	getDatabaseAvailability()
 			.then(statuses => {
 				console.log(statuses)
 				message.channel.send(statuses)
@@ -42,5 +38,18 @@ module.exports = {
 				console.log(err)
 				message.channel.send(`Error!`)
 			})
-	},
+}
+
+exports.conf = {
+	enabled: true,
+	guildOnly: true,
+	aliases: [ 'db', 'database', 'up', 'db-status', 'connection' ],
+	permLevel: "Bot Admin",
+}
+
+exports.help = {
+	name: 'db-connection-test',
+	category: "System",
+	description: 'Shows the status of ISoft database servers',
+	usage: " [test] ",
 }

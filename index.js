@@ -3,8 +3,8 @@ const bodyParser = require('body-parser')
 const app = express()
 const PORT = 8080
 const jsonParser = bodyParser.json()
-const {  messageSend } = require("./WebhookHandler")
-const { registerMeetingRoomRenamer } = require('./meeting-room-renamer')
+const messageSend  = require("./WebhookHandler")
+const registerMeetingRoomRenamer = require('./meeting-room-renamer')
 const { prefix, channelIds } = require('./config.json')
 
 // This will check if the node version you are running is the required
@@ -31,6 +31,7 @@ const client = new Client({ intents, partials })
 const commands = new Collection()
 const aliases = new Collection()
 const slashcmds = new Collection()
+client.commands = new Collection()
 
 // Generate a cache of client permissions for pretty perm names in commands.
 const levelCache = {}
@@ -47,11 +48,6 @@ client.container = {
 	slashcmds,
 	levelCache,
 }
-client.once('ready', () => {
-  registerMeetingRoomRenamer(client, channelIds)
-  console.log('ready!')
-})
-
 // We're doing real fancy node 8 async/await stuff here, and to do that
 // we need to wrap stuff in an anonymous function. It's annoying but it works.
 //eslint-disable-next-line
@@ -96,89 +92,94 @@ const init = async() => {
 	// the logic, throw this in it's own event file like the rest.
 	client.on("threadCreate", thread => thread.join())
 
-  client.on('message', message => {
-    let args, commandName
-    //const caseregex = /case ?(\d+)/i
-    const caseregex = /cases?.?(\d+)/i
-    //const militaryTimeRegex = /\b([0-2]\d)([0-5]\d)\b/
-  
-    if (caseregex.test(message.content) && !message.author.bot) {
-      const found = message.content.match(caseregex)
-      commandName = "case"
-      args = [ found[1] ]
-    /*}
-      else if (militaryTimeRegex.test(message.content) && !message.author.bot) {
-      const found = message.content.match(militaryTimeRegex)
-      commandName = "military-time"
-      args = [ found[1], found[2] ]  */
-    } else if (!message.content.startsWith(prefix) || message.author.bot) {
-      return
-    } else {
-      args = message.content.slice(prefix.length).split(/ +/)
-      commandName = args.shift().toLowerCase()
-    }
-  
-    const command = client.commands.get(commandName)
-      || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName))
-  
-    if (!command) {
-      return
-    }
-  
-    if (command.guildOnly && message.channel.type !== 'text') {
-      return message.reply('I can\'t execute that command inside DMs!')
-    }
-  
-    if (command.args && !args.length) {
-      let reply = `You didn't provide any arguments, ${message.author}!`
-  
-      if (command.usage) {
-        reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``
-      }
-  
-      return message.channel.send(reply)
-    }
-  
-    /* 	if (!cooldowns.has(command.name)) {
-      cooldowns.set(command.name, new Discord.Collection())
-    }
-    const now = Date.now()
-    const timestamps = cooldowns.get(command.name)
-    const cooldownAmount = (command.cooldown || 3) * 1000
-    if (timestamps.has(message.author.id)) {
-      const expirationTime = timestamps.get(message.author.id) + cooldownAmount
-      if (now < expirationTime) {
-        const timeLeft = (expirationTime - now) / 1000
-        return message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`)
-      }
-    }
-    timestamps.set(message.author.id, now)
-    setTimeout(() => timestamps.delete(message.author.id), cooldownAmount) */
-  
-    try {
-      command.execute(message, args)
-    } catch (error) {
-      console.error(error)
-      message.reply('there was an error trying to execute that command!')
-    }
+  client.once('ready', () => {
+    registerMeetingRoomRenamer(client, channelIds)
+    console.log('ready!')
   })
 
-	app.post("/", jsonParser, async function(req, res) {
-		try {
-			const { body } = req
-			await messageSend(body, client)
-			res.status(200).send("Webhook Recieved")
-		} catch (err) {
-			console.log("It broke somewhere")
-			res.status(500).send(err)
-		}
-	})
+  app.post("/", jsonParser, async function(req, res) {
+    try {
+      const { body } = req
+      await messageSend(body, client)
+      res.status(200).send("Webhook Recieved")
+    } catch (err) {
+      console.log("It broke somewhere")
+      console.error(err)
+      res.status(500).send(err)
+    }
+  })
 
 	// Here we login the client.
 	client.login()
 
 // End top-level async/await function.
 }
+
+client.on('messageCreate', message => {
+  let args, commandName
+  //const caseregex = /case ?(\d+)/i
+  const caseregex = /cases?.?(\d+)/i
+  //const militaryTimeRegex = /\b([0-2]\d)([0-5]\d)\b/
+
+  if (caseregex.test(message.content) && !message.author.bot) {
+    const found = message.content.match(caseregex)
+    commandName = "case"
+    args = [ found[1] ]
+  /*}
+    else if (militaryTimeRegex.test(message.content) && !message.author.bot) {
+    const found = message.content.match(militaryTimeRegex)
+    commandName = "military-time"
+    args = [ found[1], found[2] ]  */
+  } else if (!message.content.startsWith(prefix) || message.author.bot) {
+    return
+  } else {
+    args = message.content.slice(prefix.length).split(/ +/)
+    commandName = args.shift().toLowerCase()
+  }
+
+  const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName))
+
+  if (!command) {
+    return
+  }
+
+  if (command.guildOnly && message.channel.type !== 'text') {
+    return message.reply('I can\'t execute that command inside DMs!')
+  }
+
+  if (command.args && !args.length) {
+    let reply = `You didn't provide any arguments, ${message.author}!`
+
+    if (command.usage) {
+      reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``
+    }
+
+    return message.channel.send(reply)
+  }
+
+  /* 	if (!cooldowns.has(command.name)) {
+    cooldowns.set(command.name, new Discord.Collection())
+  }
+  const now = Date.now()
+  const timestamps = cooldowns.get(command.name)
+  const cooldownAmount = (command.cooldown || 3) * 1000
+  if (timestamps.has(message.author.id)) {
+    const expirationTime = timestamps.get(message.author.id) + cooldownAmount
+    if (now < expirationTime) {
+      const timeLeft = (expirationTime - now) / 1000
+      return message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`)
+    }
+  }
+  timestamps.set(message.author.id, now)
+  setTimeout(() => timestamps.delete(message.author.id), cooldownAmount) */
+
+  try {
+    command.execute(message, args)
+  } catch (error) {
+    console.error(error)
+    message.reply('there was an error trying to execute that command!')
+  }
+})
 
 init()
 

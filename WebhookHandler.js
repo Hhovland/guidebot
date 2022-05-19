@@ -68,7 +68,6 @@ async function createNewEmbed({ type: id, streamId, payload, type }) {
 					name: "Timestamps", value: `${timeCache.get(streamId)}`,
 				},
 			)
-        console.log(newEmbed)
 		return newEmbed
 	} catch (err) {
 		console.error(err)
@@ -93,40 +92,10 @@ async function createEditedEmbed({ type: id, streamId, payload, type }) {
 					name: "Timestamps", value: `${timeCache.get(streamId)}`,
 				},
 			)
-        console.log(newEmbed)
 		return newEmbed
 	} catch (err) {
 		console.error(err)
 	}
-}
-
-async function messageSend(body, client) {
-	const channel = await client.channels.fetch(botChannelId)
-	const guild = client.guilds.cache.get(serverId)
-	const serverChannel = guild.channels.cache.find(c => c.id === botChannelId && c.type === 'text')
-	const { streamId, type } = body
-    await msgStatusMaper(streamId, type)
-	if (!channel) {
-		return
-	} // if the channel is not in the cache return and do nothing
-	var embed
-	if (await messageCache.has(streamId)) {
-		embed = await createEditedEmbed(body)
-		serverChannel.messages.fetch(messageCache.get(streamId)).then(message => {
-			message.edit({embeds: [embed]})
-		}).catch(err => {
-			console.error(err)
-		})
-	} else {
-		embed = await createNewEmbed(body)
-		return channel.send({embeds: [embed]}).then(sent => {
-			let id = sent.id
-			messageCache.set(streamId, id)
-		}).catch(err => {
-			console.error(err)
-		})
-	}
-	cacheDeleteCondition(streamId, body.type)
 }
 
 function dateTime() {
@@ -171,6 +140,38 @@ function cacheDeleteCondition(streamId, callStatus) {
 		statusCache.delete(streamId)
 		timeCache.delete(streamId)
 		messageCache.delete(streamId)
+	}
+}
+
+async function messageSend(body, client) {
+	const channel = await client.channels.fetch(botChannelId)
+	const { streamId, type } = body
+    await msgStatusMaper(streamId, type)
+	if (!channel) {
+		return
+	} // if the channel is not in the cache return and do nothing
+	var embed
+	if (await messageCache.has(streamId)) {
+		embed = await createEditedEmbed(body)
+		client.channels.fetch(botChannelId).then(channel => {
+			channel.messages.fetch(messageCache.get(streamId)).then(message => {
+				message.edit({embeds: [embed]})
+				cacheDeleteCondition(streamId, body.type)
+			}).catch(err => {
+				console.error(err)
+			})
+		}).catch(err => {
+			console.error(err)
+		})
+	} else {
+		embed = await createNewEmbed(body)
+		return channel.send({embeds: [embed]}).then(sent => {
+			let id = sent.id
+			messageCache.set(streamId, id)
+			cacheDeleteCondition(streamId, body.type)
+		}).catch(err => {
+			console.error(err)
+		})
 	}
 }
 

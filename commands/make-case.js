@@ -58,27 +58,36 @@ async function insertCase(title, options = {}) {
 	return data.case.ixBug
 }
 
-module.exports = {
-	name: 'makecase',
-	description: `Quick Create Fogbugz Case`,
+exports.run = async(client, message, args, level) => { // eslint-disable-line no-unused-vars
+	if (args && args.length > 0) {
+		let lines = args.join(' ').split(/\r?\n/)
+		const title = lines.shift()
+		const description = lines.join('\n')
+
+		const projectInfo = channelProjectMap.get(message.channel.id) || { sProject: "Misc", sArea: "Misc", ixPersonAssignedTo: 15 }
+		const personInfo = personMap.get(message.author.id)
+		const newCaseId = await insertCase(title, {
+			...projectInfo,
+			ixPersonEditedBy: personInfo ? personInfo.ixPerson : 15,
+			...(description ? { sEvent: description } : {}),
+		})
+
+		message.channel.send(`Created case: https://isoftdata.fogbugz.com/f/cases/${newCaseId}`)
+	} else {
+		message.channel.send(`**Usage:** ${prefix}cc <case title>`)
+	}
+}
+
+exports.conf = {
+	enabled: true,
+	guildOnly: true,
 	aliases: [ 'cc', 'mc', 'createcase' ],
-	async execute(message, args) {
-		if (args && args.length > 0) {
-			let lines = args.join(' ').split(/\r?\n/)
-			const title = lines.shift()
-			const description = lines.join('\n')
+	permLevel: "User",
+}
 
-			const projectInfo = channelProjectMap.get(message.channel.id) || { sProject: "Misc", sArea: "Misc", ixPersonAssignedTo: 15 }
-			const personInfo = personMap.get(message.author.id)
-			const newCaseId = await insertCase(title, {
-				...projectInfo,
-				ixPersonEditedBy: personInfo ? personInfo.ixPerson : 15,
-				...(description ? { sEvent: description } : {}),
-			})
-
-			message.channel.send(`Created case: https://isoftdata.fogbugz.com/f/cases/${newCaseId}`)
-		} else {
-			message.channel.send(`**Usage:** ${prefix}cc <case title>`)
-		}
-	},
+exports.help = {
+	name: 'makecase',
+	category: "System",
+	description: `Quick Create Fogbugz Case`,
+	usage: " [makeCase] ",
 }

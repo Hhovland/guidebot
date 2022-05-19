@@ -81,10 +81,20 @@ var sophieSays =
 },
 ]
 
-module.exports = {
-	name: 'asksophie',
-	description: `sophie knows everything `,
-	execute(message) {
-		message.channel.send({ embed: sophieSays[Math.floor(Math.random() * (sophieSays.length))] })
-	},
+exports.run = async(client, message, args, level) => { // eslint-disable-line no-unused-vars
+	message.channel.send({ embed: sophieSays[Math.floor(Math.random() * (sophieSays.length))] })
+}
+
+exports.conf = {
+	enabled: true,
+	guildOnly: true,
+	aliases: [ "eightball" ],
+	permLevel: "User",
+}
+
+exports.help = {
+	name: "asksophie",
+	category: "System",
+	description: "Sophie knows everything",
+	usage: " Magic 8 ball ",
 }

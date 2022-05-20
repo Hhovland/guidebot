@@ -103,18 +103,6 @@ function dateTime() {
 	return new Date(datum)
 }
 
-function msgStatusMaper(streamId, callStatus) {
-	if (callStatus == "call.dialog.terminated") {
-		return statusCache.set(streamId, callStatus)
-	} else if (callStatus == "call.dialog.failed") {
-		return statusCache.set(streamId, callStatus)
-	} else if (callStatus == "call.dialog.confirmed") {
-		return statusCache.set(streamId, callStatus)
-	} else if (callStatus == "call.dialog.created") {
-		return statusCache.set(streamId.callStatus)
-	}
-}
-
 function timeMapper(streamId, callStatus, times = [ "Created: ", "Confirmed: ", "Terminated: ", "Failed:" ]) {
 	if (callStatus == "call.dialog.terminated") {
 		times[2] = times[2] + dateTime()
@@ -143,36 +131,42 @@ function cacheDeleteCondition(streamId, callStatus) {
 	}
 }
 
+function msgStatusMapper(streamId, callStatus) {
+    const validStatuses = [
+        'terminated',
+        'failed',
+        'confirmed',
+        'created',
+    ].map(status => `call.dialog.${status}`)
+
+    if(validStatuses.includes(callStatus)) {
+        return statusCache.set(streamId, callStatus)
+    }
+}
+
 async function messageSend(body, client) {
-	const channel = await client.channels.fetch(botChannelId)
-	const { streamId, type } = body
-    await msgStatusMaper(streamId, type)
-	if (!channel) {
-		return
-	} // if the channel is not in the cache return and do nothing
-	var embed
-	if (await messageCache.has(streamId)) {
-		embed = await createEditedEmbed(body)
-		client.channels.fetch(botChannelId).then(channel => {
-			channel.messages.fetch(messageCache.get(streamId)).then(message => {
-				message.edit({embeds: [embed]})
-				cacheDeleteCondition(streamId, body.type)
-			}).catch(err => {
-				console.error(err)
-			})
-		}).catch(err => {
-			console.error(err)
-		})
-	} else {
-		embed = await createNewEmbed(body)
-		return channel.send({embeds: [embed]}).then(sent => {
-			let id = sent.id
-			messageCache.set(streamId, id)
-			cacheDeleteCondition(streamId, body.type)
-		}).catch(err => {
-			console.error(err)
-		})
-	}
+    const channel = await client.channels.fetch(botChannelId)
+    if (!channel) {
+        return
+    } // if the channel is not in the cache return and do nothing
+    const { streamId, type } = body
+    await msgStatusMapper(streamId, type)
+    let embed
+    try {
+        if (await messageCache.has(streamId)) {
+            embed = await createEditedEmbed(body)
+            const message = await channel.messages.fetch(messageCache.get(streamId))
+            message.edit({embeds: [embed]})
+        } else {
+            embed = await createNewEmbed(body)
+            const sent = await channel.send({embeds: [embed]})
+            messageCache.set(streamId, sent.id)
+        }
+    } catch(err) {
+        console.error(err)
+    } finally {
+        cacheDeleteCondition(streamId, body.type)
+    }
 }
 
 module.exports = messageSend

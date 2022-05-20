@@ -49,12 +49,12 @@ exports.conf = {
 	enabled: true,
 	guildOnly: true,
 	aliases: [ "arcade", "scores" ],
-	permLevel: "Bot Admin",
+	permLevel: "User",
 }
 
 exports.help = {
 	name: "arcade-high-scores",
-	category: "System",
+	category: "Testing",
 	description: "Show the arcade high scores",
 	usage: " [tellTheChannel] ",
 }

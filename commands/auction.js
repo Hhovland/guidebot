@@ -16,12 +16,12 @@ exports.conf = {
 	enabled: true,
 	guildOnly: true,
 	aliases: [ "auction_totals" ],
-	permLevel: "Bot Admin",
+	permLevel: "User",
 }
 
 exports.help = {
 	name: "auction",
-	category: "System",
+	category: "Auction",
 	description: 'Get Auction Summary',
 	usage: " [auctionid] ",
 }

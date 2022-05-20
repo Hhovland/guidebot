@@ -22,12 +22,12 @@ exports.conf = {
 	enabled: true,
 	guildOnly: true,
 	aliases: [ "ud" ],
-	permLevel: "Bot Admin",
+	permLevel: "User",
 }
 
 exports.help = {
 	name: 'urban-dictionary',
-	category: "System",
+	category: "Gimmick",
 	description: 'Define using Urban Dictionary',
 	usage: " term ",
 }

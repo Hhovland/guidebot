@@ -111,12 +111,12 @@ exports.conf = {
 	enabled: true,
 	guildOnly: true,
 	aliases: [ "case" ],
-	permLevel: "Bot Admin",
+	permLevel: "User",
 }
 
 exports.help = {
 	name: 'case',
-	category: "System",
+	category: "FogBugz",
 	description: `Show Fogbugz case information`,
 	usage: " [case] ",
 }

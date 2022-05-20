@@ -44,12 +44,12 @@ exports.conf = {
 	enabled: true,
 	guildOnly: true,
 	aliases: [ 'db', 'database', 'up', 'db-status', 'connection' ],
-	permLevel: "Bot Admin",
+	permLevel: "Moderator",
 }
 
 exports.help = {
 	name: 'db-connection-test',
-	category: "System",
+	category: "Testing",
 	description: 'Shows the status of ISoft database servers',
 	usage: " [test] ",
 }

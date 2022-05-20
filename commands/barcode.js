@@ -15,12 +15,12 @@ exports.conf = {
 	enabled: true,
 	guildOnly: true,
 	aliases: [ "bc" ],
-	permLevel: "Bot Admin",
+	permLevel: "User",
 }
 
 exports.help = {
 	name: "barcode",
-	category: "System",
+	category: "Barcode",
 	description: 'Get a Code39 barcode image',
 	usage: " term ",
 }

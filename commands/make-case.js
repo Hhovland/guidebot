@@ -87,7 +87,7 @@ exports.conf = {
 
 exports.help = {
 	name: 'makecase',
-	category: "System",
+	category: "FogBugz",
 	description: `Quick Create Fogbugz Case`,
 	usage: " [makeCase] ",
 }

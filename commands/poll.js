@@ -8,7 +8,7 @@ exports.conf = {
 	enabled: true,
 	guildOnly: true,
 	aliases: [ "poll" ],
-	permLevel: "Bot Admin",
+	permLevel: "User",
 }
 
 exports.help = {

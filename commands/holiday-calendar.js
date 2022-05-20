@@ -64,12 +64,12 @@ exports.conf = {
 	enabled: true,
 	guildOnly: true,
 	aliases: [ 'holidays', 'holidaylist' ],
-	permLevel: "Bot Admin",
+	permLevel: "User",
 }
 
 exports.help = {
 	name: "holiday",
-	category: "System",
+	category: "HR",
 	description: "List of ISoft paid holidays",
 	usage: " [postList] ",
 }

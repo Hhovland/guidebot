@@ -188,12 +188,12 @@ exports.conf = {
 	enabled: true,
 	guildOnly: true,
 	aliases: [ 'auction-inventory-types', 'apt' ],
-	permLevel: "Bot Admin",
+	permLevel: "User",
 }
 
 exports.help = {
 	name: 'auction-part-types',
-	category: "System",
+	category: "Auction",
 	description: 'See appraisal and sale information for given part types',
 	usage: " [tellTheChannel] ",
 }

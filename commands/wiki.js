@@ -24,12 +24,12 @@ exports.conf = {
 	enabled: true,
 	guildOnly: true,
 	aliases: [ "wikido" ],
-	permLevel: "Bot Admin",
+	permLevel: "User",
 }
 
 exports.help = {
 	name: 'wiki',
-	category: "System",
+	category: "Gimmick",
 	description: 'Useful Wiki Pages',
 	usage: " PostWikiPages ",
 }

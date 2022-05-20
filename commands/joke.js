@@ -29,12 +29,12 @@ exports.conf = {
 	enabled: true,
 	guildOnly: true,
 	aliases: [ "jokes" ],
-	permLevel: "Bot Admin",
+	permLevel: "User",
 }
 
 exports.help = {
 	name: "joke",
-	category: "System",
+	category: "Gimmick",
 	description: `Aren't you glad I didn't say banana?`,
 	usage: " [postJoke] ",
 }

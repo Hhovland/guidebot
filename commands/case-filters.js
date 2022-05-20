@@ -62,12 +62,12 @@ exports.conf = {
 	enabled: true,
 	guildOnly: true,
 	aliases: [ "filters" ],
-	permLevel: "Bot Admin",
+	permLevel: "User",
 }
 
 exports.help = {
 	name: 'case-filters',
-	category: "System",
+	category: "FogBugz",
 	description: `Show Fogbugz case filters`,
 	usage: " [filter] ",
 }

@@ -67,12 +67,12 @@ exports.conf = {
 	enabled: true,
 	guildOnly: true,
 	aliases: [ "al" ],
-	permLevel: "Bot Admin",
+	permLevel: "User",
 }
 
 exports.help = {
 	name: "auctionlist",
-	category: "System",
+	category: "Auction",
 	description: 'Shows recent and upcomming auctions',
 	usage: " [tellTheChannel] ",
 }

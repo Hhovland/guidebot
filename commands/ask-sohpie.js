@@ -94,7 +94,7 @@ exports.conf = {
 
 exports.help = {
 	name: "asksophie",
-	category: "System",
+	category: "Gimmick",
 	description: "Sophie knows everything",
 	usage: " Magic 8 ball ",
 }
